@@ -52,9 +52,6 @@ client = QdrantClient(url,api_key=qdrant_api_key)
 api_client = APIClient(groq_api_key)
 analyzer = SalesCallAnalyzer(cohere_api_key)
 
-st.title("Real-Time Speech to Text Transcription")
-st.write("Press the button below to start or stop recording.")
-
 if 'recording' not in st.session_state:
     st.session_state.recording = False
 if 'full_transcript' not in st.session_state:
@@ -71,6 +68,8 @@ if "found_categories" not in st.session_state:
 
 stop_recording_event = None
 if options == "Start the call":
+    st.title("Real-Time Speech to Text Transcription")
+    st.write("Press the button below to start or stop recording.")
     async def get_transcript():
         global stop_recording_event
         stop_recording_event = asyncio.Event()  
@@ -106,7 +105,6 @@ if options == "Start the call":
                             for i in products:
                                 st.write(i)
                                 st.session_state.recommended_products.append({i})
-                        st.write("Recommended Products")
                         objection_rag(latest_transcript)
     
                         st.session_state.extracted_data.append({
@@ -182,19 +180,6 @@ elif options == "Summary":
                 for i in clothing_questions:
                     st.write(i)
             st.markdown("-----")
-            st.subheader("Products Recommedated to the user")
-            if "recommendation" in st.session_state:
-                product_recommendations = st.session_state.recommendation
-                if product_recommendations: 
-                    product_counts = Counter(product_recommendations)
-                    top_5_products = [product for product, _ in product_counts.most_common(5)]
-                    st.subheader("Top Product Recommendations for this user")
-                    for product in top_5_products:
-                        st.write(f"**{product}**")
-                else:
-                    st.warning("No recommendations for this user.")
-            else:
-                st.error("No product recommendations found in the session state.")
 
             if st.button("Generate PDF for Customer Insights"):
                 pdf_file_name = "customer_insights_report.pdf"
